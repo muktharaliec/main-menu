@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Suite - Main Menu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .app-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
+                    <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white">Enterprise Hub</h1>
+                    <p class="text-xs text-slate-400">Central Application Launcher</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-2 bg-slate-800 border border-slate-700/60 rounded-xl px-3 py-1.5 text-xs text-slate-300">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>System Online</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Launcher Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-6 md:p-10 flex flex-col justify-center">
+        
+        <div class="mb-10 text-center max-w-2xl mx-auto">
+            <h2 class="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">Select an Application</h2>
+            <p class="mt-2 text-sm text-slate-400">Choose from your available workspace tools below to redirect instantly.</p>
+        </div>
+
+        <!-- App Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            
+            <!-- Card 1: Tax Calculator -->
+            <a href="Tax_calculator.html" class="app-card group bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="p-3.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all shadow-md">
+                            <i data-lucide="calculator" class="w-7 h-7"></i>
+                        </div>
+                        <span class="text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                            VAT Portal
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">Tax Calculator</h3>
+                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                        Global VAT calculation engine supporting custom rates, multi-country tax presets, and unit calculations.
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
+                    <span>Launch Calculator</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </a>
+
+            <!-- Card 2: Petty Cash Manager -->
+            <a href="petty_cash_manager.html" class="app-card group bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="p-3.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-md">
+                            <i data-lucide="wallet" class="w-7 h-7"></i>
+                        </div>
+                        <span class="text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                            Finance (AED)
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Petty Cash Manager</h3>
+                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                        Manage petty cash expense entries, user permissions, opening balances, and Excel imports/exports.
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform">
+                    <span>Open Expense Manager</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </a>
+
+            <!-- Card 3: Odoo Product Import Manager -->
+            <a href="index.html" class="app-card group bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="p-3.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl group-hover:bg-purple-500 group-hover:text-white transition-all shadow-md">
+                            <i data-lucide="package-plus" class="w-7 h-7"></i>
+                        </div>
+                        <span class="text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                            ERP Tools
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Odoo Product Import</h3>
+                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                        Odoo 18 ready product batch management. Edit brands, categories, POS settings, and export to Odoo Excel schemas.
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform">
+                    <span>Open Import Tool</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        Enterprise Hub Portal
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
