@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Suite - Main Menu</title>
-    <!-- Tailwind CSS -->
+    <title>Eazy Suite Hub - Application Launcher</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; }
+        .resizable-table th { position: relative; user-select: none; }
+        .resizer {
+            position: absolute; right: 0; top: 0; height: 100%; width: 6px;
+            background: rgba(0, 0, 0, 0.05); cursor: col-resize; user-select: none;
+        }
+        .resizer:hover, .resizing { background: #2563eb; width: 8px; }
+        table { table-layout: fixed; }
         .app-card {
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -17,120 +24,514 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
 
-    <!-- Header / Navbar -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="p-2.5 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
-                    <i data-lucide="layout-grid" class="w-6 h-6"></i>
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showDashboard()">
+                <div class="p-2 bg-blue-600 rounded-lg shadow-sm">
+                    <i data-lucide="layout-grid" class="w-6 h-6 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-tight text-white">Enterprise Hub</h1>
-                    <p class="text-xs text-slate-400">Central Application Launcher</p>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide">Eazy Suite Hub</h1>
+                    <p class="text-xs text-slate-400">Integrated Odoo & Financial Portal</p>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-4">
-                <div class="hidden sm:flex items-center space-x-2 bg-slate-800 border border-slate-700/60 rounded-xl px-3 py-1.5 text-xs text-slate-300">
-                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>System Online</span>
-                </div>
-            </div>
+            <!-- Header Action Button -->
+            <button onclick="showDashboard()" id="homeHeaderBtn" class="hidden px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 transition-colors flex items-center gap-2 border border-slate-700">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Back to Hub</span>
+            </button>
         </div>
     </header>
 
-    <!-- Main Launcher Area -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-6 md:p-10 flex flex-col justify-center">
-        
-        <div class="mb-10 text-center max-w-2xl mx-auto">
-            <h2 class="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">Select an Application</h2>
-            <p class="mt-2 text-sm text-slate-400">Choose from your available workspace tools below to redirect instantly.</p>
-        </div>
+    <!-- CONTENT WRAPPER -->
+    <main class="flex-grow p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
 
-        <!-- App Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            
-            <!-- Card 1: Tax Calculator -->
-            <a href="Tax_calculator.html" class="app-card group bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all">
-                <div>
-                    <div class="flex items-center justify-between mb-5">
-                        <div class="p-3.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-all shadow-md">
+        <!-- MAIN CARD LAUNCHER DASHBOARD VIEW (3 CARDS ONLY) -->
+        <section id="view-dashboard" class="space-y-8">
+            <div class="text-center max-w-2xl mx-auto my-4 space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Enterprise Application Suite</h2>
+                <p class="text-slate-500 text-sm">Select an application module below to manage data, format bulk uploads, and run operational calculations.</p>
+            </div>
+
+            <!-- GRID OF 3 APPLICATION CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- CARD 1: ODOO 18 PRODUCT MANAGER -->
+                <div onclick="openModule('odoo')" class="app-card bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm hover:shadow-xl hover:border-indigo-400 cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-indigo-50 rounded-full group-hover:scale-110 transition-transform -z-0"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="p-3 bg-indigo-500/10 w-fit rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            <i data-lucide="package" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Product Manager</h3>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Import, edit, duplicate, and export catalog items formatted for Odoo 18 import.</p>
+                        </div>
+                    </div>
+                    <div class="relative z-10 pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
+                        <span>Launch Module</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- CARD 2: VAT CALCULATOR -->
+                <div onclick="openModule('vat')" class="app-card bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm hover:shadow-xl hover:border-emerald-400 cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-emerald-50 rounded-full group-hover:scale-110 transition-transform -z-0"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="p-3 bg-emerald-500/10 w-fit rounded-xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                             <i data-lucide="calculator" class="w-7 h-7"></i>
                         </div>
-                        <span class="text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                            VAT Portal
-                        </span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">VAT Calculator</h3>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Calculate tax excluded prices and unit breakdown across regional rulesets.</p>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">Tax Calculator</h3>
-                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-                        Global VAT calculation engine supporting custom rates, multi-country tax presets, and unit calculations.
-                    </p>
+                    <div class="relative z-10 pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
+                        <span>Launch Module</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
                 </div>
 
-                <div class="mt-8 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
-                    <span>Launch Calculator</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </div>
-            </a>
-
-            <!-- Card 2: Petty Cash Manager -->
-            <a href="petty_cash_manager.html" class="app-card group bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all">
-                <div>
-                    <div class="flex items-center justify-between mb-5">
-                        <div class="p-3.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-md">
+                <!-- CARD 3: PETTY CASH -->
+                <div onclick="openModule('petty')" class="app-card bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm hover:shadow-xl hover:border-amber-400 cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-amber-50 rounded-full group-hover:scale-110 transition-transform -z-0"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="p-3 bg-amber-500/10 w-fit rounded-xl text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
                             <i data-lucide="wallet" class="w-7 h-7"></i>
                         </div>
-                        <span class="text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                            Finance (AED)
-                        </span>
-                    </div>
-                    <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Petty Cash Manager</h3>
-                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-                        Manage petty cash expense entries, user permissions, opening balances, and Excel imports/exports.
-                    </p>
-                </div>
-
-                <div class="mt-8 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform">
-                    <span>Open Expense Manager</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </div>
-            </a>
-
-            <!-- Card 3: Odoo Product Import Manager -->
-            <a href="index.html" class="app-card group bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all">
-                <div>
-                    <div class="flex items-center justify-between mb-5">
-                        <div class="p-3.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl group-hover:bg-purple-500 group-hover:text-white transition-all shadow-md">
-                            <i data-lucide="package-plus" class="w-7 h-7"></i>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Petty Cash</h3>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Track office expenses, itemized totals, and maintain cash balance in AED.</p>
                         </div>
-                        <span class="text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                            ERP Tools
-                        </span>
                     </div>
-                    <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Odoo Product Import</h3>
-                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-                        Odoo 18 ready product batch management. Edit brands, categories, POS settings, and export to Odoo Excel schemas.
-                    </p>
+                    <div class="relative z-10 pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
+                        <span>Launch Module</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
                 </div>
 
-                <div class="mt-8 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform">
-                    <span>Open Import Tool</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </div>
-            </a>
+            </div>
+        </section>
 
+        <!-- APP WORKSPACE CONTAINER -->
+        <div id="workspace-container" class="hidden">
+            <div class="mb-4 flex items-center justify-between">
+                <button onclick="showDashboard()" class="text-slate-600 hover:text-slate-900 text-xs font-semibold flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Back to Main Hub
+                </button>
+            </div>
+
+            <!-- 1. ODOO 18 PRODUCT IMPORT MANAGER -->
+            <section id="module-odoo" class="space-y-4 hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="package" class="w-6 h-6 text-blue-600"></i>
+                                Odoo 18 Product Import Manager
+                            </h2>
+                            <p class="text-xs text-slate-500">Edit, import, duplicate, and export products formatted for Odoo 18 CSV/XLSX import.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label class="bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 px-3 py-1.5 rounded-lg text-xs cursor-pointer font-medium">
+                                📁 Import File
+                                <input type="file" accept=".xlsx, .xls, .csv" class="hidden" onchange="importExcel(event)">
+                            </label>
+                            <button onclick="addNewRow()" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-blue-700 font-medium">+ Add Row</button>
+                            <button onclick="duplicateSelectedRows()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-medium">📋 Duplicate Selected</button>
+                            <button onclick="deleteSelectedRows()" class="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-medium">🗑 Delete Selected</button>
+                            <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs hover:bg-emerald-700 font-medium shadow-sm">📥 Download Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white shadow-sm border border-slate-200 rounded-lg overflow-x-auto">
+                        <table class="w-full text-left border-collapse resizable-table" id="productTable">
+                            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                <tr>
+                                    <th class="border-r text-center" style="width: 40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                                    <th class="border-r p-2" style="width: 200px;">Name<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 120px;">Barcode<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 130px;">Brand<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 150px;">Category<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 130px;">POS Cat<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 110px;">UOM<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 90px;">Price (Incl)<div class="resizer"></div></th>
+                                    <th class="border-r p-2" style="width: 90px;">Cost (Incl)<div class="resizer"></div></th>
+                                    <th class="p-2 text-center" style="width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3 flex justify-between items-center text-xs text-slate-500">
+                        <div>Total Items: <span id="totalItems" class="font-bold text-slate-800">0</span></div>
+                        <div class="space-x-4">
+                            <span>Total Price: <span id="totalPriceSum" class="font-bold text-slate-800">0.00</span></span>
+                            <span>Total Cost: <span id="totalCostSum" class="font-bold text-slate-800">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. EAZYTAX GLOBAL VAT PORTAL -->
+            <section id="module-vat" class="space-y-4 hidden flex justify-center">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="p-2 bg-blue-600 text-white rounded-lg">
+                            <i data-lucide="calculator" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">EazyTax VAT Engine</h2>
+                            <p class="text-xs text-slate-500">Calculate tax excluded prices & unit costs</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Select Country Ruleset</label>
+                            <select id="countrySelector" onchange="handleCountryRulesetChange()" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
+                                <option value="AE" data-rate="0.05" data-curr="AED" selected>United Arab Emirates (5%)</option>
+                                <option value="SA" data-rate="0.15" data-curr="SAR">Saudi Arabia (15% VAT)</option>
+                                <option value="BH" data-rate="0.10" data-curr="BHD">Bahrain (10% VAT)</option>
+                                <option value="OM" data-rate="0.05" data-curr="OMR">Oman (5% VAT)</option>
+                                <option value="UK" data-rate="0.20" data-curr="GBP">United Kingdom (20%)</option>
+                                <option value="IN" data-rate="0.18" data-curr="INR">India (18% GST)</option>
+                                <option value="CUSTOM" data-rate="0.00" data-curr="USD">Custom Configuration</option>
+                            </select>
+                            <span id="taxRateDisplayBadge" class="inline-block mt-1 text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Active System Configuration: 5% VAT</span>
+                        </div>
+
+                        <div id="customTaxRateGroup" class="hidden">
+                            <label class="block font-semibold text-slate-600 mb-1">Custom Tax Percentage Rate (%)</label>
+                            <input type="number" id="customTaxRateField" step="any" value="5.00" class="w-full border border-slate-300 rounded-lg p-2">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Total Price (Incl. Tax)</label>
+                            <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden">
+                                <span id="currencyPrefixLabel" class="bg-slate-100 px-3 py-2 font-bold text-slate-600 border-r border-slate-300">AED</span>
+                                <input type="number" id="totalIncTax" step="any" placeholder="0.0000" class="w-full p-2 outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Quantity</label>
+                            <input type="number" id="quantity" value="1" step="any" class="w-full border border-slate-300 rounded-lg p-2">
+                        </div>
+
+                        <button onclick="calculatePrice()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-colors">Calculate Values</button>
+
+                        <div id="resultsSection" class="hidden border-t border-slate-200 pt-3 space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-600">Total Price (Excl. Tax):</span>
+                                <span class="font-mono font-bold text-emerald-600"><span id="resTotal">0.0000</span> <span class="currency-postfix">AED</span></span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-600">Unit Price (Excl. Tax):</span>
+                                <span class="font-mono font-bold text-amber-600"><span id="resUnit">0.0000</span> <span class="currency-postfix">AED</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. PETTY CASH MANAGER -->
+            <section id="module-petty" class="space-y-4 hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="wallet" class="w-6 h-6 text-blue-600"></i>
+                                Petty Cash Expense Manager
+                            </h2>
+                            <p class="text-xs text-slate-500">Track petty cash expenses, import/export Excel, and balance in AED.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="addPettyRow()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-900">+ Add Expense</button>
+                            <button onclick="exportPettyExcel()" class="bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-800">Export Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1">Statement Date</label>
+                            <input type="date" id="pettyMasterDate" class="w-full bg-white border border-slate-200 rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1">Opening Cash Balance (AED)</label>
+                            <input type="number" id="pettyOpeningBalance" value="1000.00" step="0.01" oninput="calculatePettyTotals()" class="w-full bg-white border border-slate-200 rounded-lg p-2 font-semibold">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1">Reference / Voucher No.</label>
+                            <input type="text" id="pettyVoucherRef" placeholder="e.g. PC-2026-001" class="w-full bg-white border border-slate-200 rounded-lg p-2">
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left text-xs" id="pettyTable">
+                            <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5 w-12 text-center">#</th>
+                                    <th class="p-2.5 w-28">Date</th>
+                                    <th class="p-2.5">Description</th>
+                                    <th class="p-2.5 w-28 text-right">Food (AED)</th>
+                                    <th class="p-2.5 w-32 text-right">Supplier (AED)</th>
+                                    <th class="p-2.5 w-28 text-right">Other (AED)</th>
+                                    <th class="p-2.5 w-32 text-right">Subtotal</th>
+                                    <th class="p-2.5 w-12 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pettyTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4 bg-slate-900 text-white p-4 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div><span class="text-slate-400">Opening Balance:</span> <strong id="pettyDispOpening" class="block text-sm">AED 1,000.00</strong></div>
+                        <div><span class="text-slate-400">Total Expenses:</span> <strong id="pettyDispExpenses" class="block text-sm text-rose-400">AED 0.00</strong></div>
+                        <div><span class="text-blue-200">Remaining Balance:</span> <strong id="pettyDispBalance" class="block text-base text-emerald-400">AED 1,000.00</strong></div>
+                    </div>
+                </div>
+            </section>
         </div>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        Enterprise Hub Portal
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- NAVIGATION & VIEW ROUTER ---
+        function showDashboard() {
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            document.getElementById('workspace-container').classList.add('hidden');
+            document.getElementById('homeHeaderBtn').classList.add('hidden');
+        }
+
+        function openModule(tabId) {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('workspace-container').classList.remove('hidden');
+            document.getElementById('homeHeaderBtn').classList.remove('hidden');
+
+            ['odoo', 'vat', 'petty'].forEach(id => {
+                const mod = document.getElementById(`module-${id}`);
+                if (mod) mod.classList.add('hidden');
+            });
+
+            const targetModule = document.getElementById(`module-${tabId}`);
+            if (targetModule) targetModule.classList.remove('hidden');
+        }
+
+        // --- ODOO PRODUCT MANAGER LOGIC ---
+        const brands = {446:"AFZAL",447:"AGER",448:"AKC",453:"AL FAKHER",487:"MAZAYA",564:"MARLBORO",624:"GEEKVAPE",630:"NASTY"};
+        const categories = {1:"All",2:"All / Saleable",589:"ACCESSORIES",622:"FUEL",626:"SMOKING"};
+        const posCats = {101:"SMOKING",102:"FUEL",103:"MOASSEL",105:"ACCESSORIES"};
+        const uoms = {1:"PCS",2:"Dozens",3:"kg",73:"PACK",193:"BOX (10 PKT)"};
+
+        let products = [];
+
+        function addNewRow() {
+            products.push({selected: false, name:'', barcode:'', brand_id:'446', category_id:'589', pos_cat_id:'101', uom_id:'1', price:0, cost:0});
+            renderTable();
+        }
+
+        function duplicateSelectedRows() {
+            const newProducts = [];
+            products.forEach(p => {
+                newProducts.push(p);
+                if (p.selected) {
+                    const copy = JSON.parse(JSON.stringify(p));
+                    copy.selected = false;
+                    newProducts.push(copy);
+                }
+            });
+            products = newProducts;
+            renderTable();
+        }
+
+        function deleteSelectedRows() {
+            products = products.filter(p => !p.selected);
+            document.getElementById('selectAll').checked = false;
+            renderTable();
+        }
+
+        function toggleSelectAll(master) {
+            products.forEach(p => p.selected = master.checked);
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = products.map((p, i) => `
+                <tr class="hover:bg-blue-50/50">
+                    <td class="border-r border-b text-center"><input type="checkbox" ${p.selected ? 'checked' : ''} onchange="updateProduct(${i}, 'selected', this.checked)"></td>
+                    <td class="border-r border-b p-1"><input type="text" value="${p.name}" onchange="updateProduct(${i}, 'name', this.value)" class="w-full border rounded p-1"></td>
+                    <td class="border-r border-b p-1"><input type="text" value="${p.barcode}" onchange="updateProduct(${i}, 'barcode', this.value)" class="w-full border rounded p-1"></td>
+                    <td class="border-r border-b p-1"><select onchange="updateProduct(${i}, 'brand_id', this.value)" class="w-full border rounded p-1">${Object.entries(brands).map(([id, name]) => `<option value="${id}" ${p.brand_id==id?'selected':''}>${name}</option>`).join('')}</select></td>
+                    <td class="border-r border-b p-1"><select onchange="updateProduct(${i}, 'category_id', this.value)" class="w-full border rounded p-1">${Object.entries(categories).map(([id, name]) => `<option value="${id}" ${p.category_id==id?'selected':''}>${name}</option>`).join('')}</select></td>
+                    <td class="border-r border-b p-1"><select onchange="updateProduct(${i}, 'pos_cat_id', this.value)" class="w-full border rounded p-1">${Object.entries(posCats).map(([id, name]) => `<option value="${id}" ${p.pos_cat_id==id?'selected':''}>${name}</option>`).join('')}</select></td>
+                    <td class="border-r border-b p-1"><select onchange="updateProduct(${i}, 'uom_id', this.value)" class="w-full border rounded p-1">${Object.entries(uoms).map(([id, name]) => `<option value="${id}" ${p.uom_id==id?'selected':''}>${name}</option>`).join('')}</select></td>
+                    <td class="border-r border-b p-1"><input type="number" step="0.01" value="${p.price}" onchange="updateProduct(${i}, 'price', this.value)" class="w-full border rounded p-1"></td>
+                    <td class="border-r border-b p-1"><input type="number" step="0.01" value="${p.cost}" onchange="updateProduct(${i}, 'cost', this.value)" class="w-full border rounded p-1"></td>
+                    <td class="border-b p-1 text-center">
+                        <button onclick="products.splice(${i},1);renderTable();" class="text-rose-600">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateProductStats();
+        }
+
+        function updateProduct(i, field, val) {
+            products[i][field] = val;
+            if(field === 'price' || field === 'cost') updateProductStats();
+        }
+
+        function updateProductStats() {
+            document.getElementById('totalItems').innerText = products.length;
+            const totalPrice = products.reduce((acc, p) => acc + (parseFloat(p.price) || 0), 0);
+            const totalCost = products.reduce((acc, p) => acc + (parseFloat(p.cost) || 0), 0);
+            document.getElementById('totalPriceSum').innerText = totalPrice.toFixed(2);
+            document.getElementById('totalCostSum').innerText = totalCost.toFixed(2);
+        }
+
+        function downloadExcel() {
+            if (products.length === 0) return alert("Add products first.");
+            const excelData = products.map(p => ({
+                "Name": p.name,
+                "BarCode": p.barcode,
+                "Brand": p.brand_id,
+                "Type": "goods",
+                "Product Category / Database id": p.category_id,
+                "Point of Sale Category / Database Id": p.pos_cat_id,
+                "Unit of measure/Database ID": p.uom_id,
+                "Price": parseFloat((p.price / 1.05).toFixed(4)),
+                "Cost": parseFloat((p.cost / 1.05).toFixed(4))
+            }));
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Products");
+            XLSX.writeFile(wb, "odoo18_import_products.xlsx");
+        }
+
+        function importExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                products = jsonData.map(r => ({
+                    selected: false,
+                    name: r['Name'] || r['name'] || '',
+                    barcode: r['BarCode'] || r['barcode'] || '',
+                    brand_id: r['Brand'] || '446',
+                    category_id: r['Product Category / Database id'] || '589',
+                    pos_cat_id: r['Point of Sale Category / Database Id'] || '101',
+                    uom_id: r['Unit of measure/Database ID'] || '1',
+                    price: r['Price'] ? (parseFloat(r['Price']) * 1.05).toFixed(2) : 0,
+                    cost: r['Cost'] ? (parseFloat(r['Cost']) * 1.05).toFixed(2) : 0
+                }));
+                renderTable();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- VAT ENGINE CALCULATOR LOGIC ---
+        function handleCountryRulesetChange() {
+            const selector = document.getElementById('countrySelector');
+            const selectedOption = selector.options[selector.selectedIndex];
+            const customGroup = document.getElementById('customTaxRateGroup');
+            const currencyCode = selectedOption.getAttribute('data-curr');
+            const defaultRate = parseFloat(selectedOption.getAttribute('data-rate'));
+
+            document.getElementById('currencyPrefixLabel').innerText = currencyCode;
+            document.querySelectorAll('.currency-postfix').forEach(el => el.innerText = currencyCode);
+
+            if(selectedOption.value === 'CUSTOM') {
+                customGroup.classList.remove('hidden');
+                document.getElementById('taxRateDisplayBadge').innerText = "Manual Field Input Overwrite Active";
+            } else {
+                customGroup.classList.add('hidden');
+                document.getElementById('taxRateDisplayBadge').innerText = `Active System Configuration: ${(defaultRate * 100).toFixed(0)}% VAT`;
+            }
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
+        function calculatePrice() {
+            const totalIncTax = parseFloat(document.getElementById('totalIncTax').value);
+            const quantity = parseFloat(document.getElementById('quantity').value);
+            const selector = document.getElementById('countrySelector');
+            const selectedOption = selector.options[selector.selectedIndex];
+
+            let taxRate = 0.05;
+            if(selectedOption.value === 'CUSTOM') {
+                taxRate = parseFloat(document.getElementById('customTaxRateField').value) / 100;
+            } else {
+                taxRate = parseFloat(selectedOption.getAttribute('data-rate'));
+            }
+
+            if (isNaN(totalIncTax) || isNaN(quantity) || quantity <= 0) return alert("Enter valid numbers.");
+
+            const totalWithoutTax = totalIncTax / (1 + taxRate);
+            document.getElementById('resTotal').innerText = totalWithoutTax.toFixed(4);
+            document.getElementById('resUnit').innerText = (totalWithoutTax / quantity).toFixed(4);
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+
+        // --- PETTY CASH LOGIC ---
+        let pettyRows = [
+            { date: new Date().toISOString().split('T')[0], description: "Office Tea & Snacks", food: 25.00, supplier: 0, other: 0 }
+        ];
+
+        function addPettyRow() {
+            pettyRows.push({ date: new Date().toISOString().split('T')[0], description: "", food: 0, supplier: 0, other: 0 });
+            renderPettyTable();
+        }
+
+        function renderPettyTable() {
+            const tbody = document.getElementById('pettyTableBody');
+            tbody.innerHTML = pettyRows.map((r, i) => {
+                const sub = (parseFloat(r.food)||0) + (parseFloat(r.supplier)||0) + (parseFloat(r.other)||0);
+                return `
+                    <tr>
+                        <td class="p-2 text-center font-medium">${i + 1}</td>
+                        <td class="p-1"><input type="date" value="${r.date}" onchange="pettyRows[${i}].date=this.value" class="w-full border rounded p-1"></td>
+                        <td class="p-1"><input type="text" value="${r.description}" onchange="pettyRows[${i}].description=this.value" class="w-full border rounded p-1"></td>
+                        <td class="p-1"><input type="number" value="${r.food}" oninput="pettyRows[${i}].food=this.value;calculatePettyTotals();" class="w-full border rounded p-1 text-right"></td>
+                        <td class="p-1"><input type="number" value="${r.supplier}" oninput="pettyRows[${i}].supplier=this.value;calculatePettyTotals();" class="w-full border rounded p-1 text-right"></td>
+                        <td class="p-1"><input type="number" value="${r.other}" oninput="pettyRows[${i}].other=this.value;calculatePettyTotals();" class="w-full border rounded p-1 text-right"></td>
+                        <td class="p-2 text-right font-semibold">AED ${sub.toFixed(2)}</td>
+                        <td class="p-1 text-center"><button onclick="pettyRows.splice(${i},1);renderPettyTable();" class="text-rose-600">✕</button></td>
+                    </tr>
+                `;
+            }).join('');
+            calculatePettyTotals();
+        }
+
+        function calculatePettyTotals() {
+            const totalExp = pettyRows.reduce((acc, r) => acc + (parseFloat(r.food)||0) + (parseFloat(r.supplier)||0) + (parseFloat(r.other)||0), 0);
+            const openBal = parseFloat(document.getElementById('pettyOpeningBalance').value) || 0;
+            
+            document.getElementById('pettyDispOpening').innerText = `AED ${openBal.toFixed(2)}`;
+            document.getElementById('pettyDispExpenses').innerText = `AED ${totalExp.toFixed(2)}`;
+            document.getElementById('pettyDispBalance').innerText = `AED ${(openBal - totalExp).toFixed(2)}`;
+        }
+
+        function exportPettyExcel() {
+            const ws = XLSX.utils.json_to_sheet(pettyRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Petty Cash");
+            XLSX.writeFile(wb, "Petty_Cash_Report.xlsx");
+        }
+
+        // --- INIT ---
+        document.addEventListener("DOMContentLoaded", () => {
+            showDashboard();
+            addNewRow();
+            renderPettyTable();
+            document.getElementById('pettyMasterDate').value = new Date().toISOString().split('T')[0];
             lucide.createIcons();
         });
     </script>
